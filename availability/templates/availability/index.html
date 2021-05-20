@@ -1,0 +1,42 @@
+{% extends 'availability/base.html' %}
+
+{% block content %}
+  <h1>Vaccine Availability</h1>
+  <form method="POST">
+  <select name="item_id">
+    {% for entry in list_states %}
+    <option value="{{ entry.id }}">{{ entry.name }}</option>
+    {% endfor %}
+  </select>
+  </form>
+  <form method="get">
+    <input type="text" name="district_id">
+    <button type="submit">Check for availability</button>
+  </form>
+  {% if batch_list %}
+  <table>
+    <tr>
+      <th>Center Location</th>
+      <th>Date</th>
+      <th>Age Limit</th>
+      <th>Capacity</th>
+      <th>Vaccine</th>
+    </tr>
+    {% for batch in batch_list %}
+    <tr>
+      {% for key, value in batch.items %}
+        {% if key == "name" %}
+          <td>
+          {% for x in value %}
+            {{ x }} <br/>
+          {% endfor %}
+          </td>
+        {% else %}
+        <td> {{ value }} </td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+{% endblock content %}
