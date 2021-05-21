@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from collections import defaultdict
 import requests
 from datetime import datetime
 from .models import district_mapping
@@ -40,5 +40,10 @@ def index(request):
         return render(request, 'availability/index.html', {'batch_list': batch_list})
     else:
         dmaps = district_mapping.objects.all()
-        list_states = unique([a.state_name for a in dmaps])
-        return render(request, 'availability/index.html', {'dmaps': dmaps, 'list_states': list_states})
+        state_dist_list = [[b.state_name, b.district_name] for b in dmaps]
+        d1 = defaultdict(list)
+        for k, v in state_dist_list:
+            d1[k].append(v)
+        state_dist_dict = dict((k, tuple(v)) for k, v in d1.items())
+        dist_id_dict = {c.district_name: c.district_id for c in dmaps}
+        return render(request, 'availability/index.html', {'dist_id_dict': dist_id_dict, 'state_dist_dict': state_dist_dict})

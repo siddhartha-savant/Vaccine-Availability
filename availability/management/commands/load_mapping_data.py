@@ -15,7 +15,7 @@ class Command(BaseCommand):
     help = "Loads data from district_mapping.csv into our district_mapping mode"
 
     def handle(self, *args, **options):
-        if district_mapping.objects.exists():       # Django model has an attribute called objects with various methods
+        if district_mapping.objects.exists():
             print('District mapping data already loaded...exiting.')
             print(ALREADY_LOADED_ERROR_MESSAGE)
             return
