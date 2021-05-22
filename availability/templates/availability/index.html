@@ -1,40 +1,44 @@
 {% extends 'availability/base.html' %}
-
 {% block content %}
-  <h1>Vaccine Availability</h1>
 
-  <form method="post">
-  <label for="state_name">Choose your respective state:</label>
-  <select name= "state_name" id="state_name" onchange="getSelected(this)">
-    <option value="">--Please choose an option--</option>
-  {% for key,value in state_dist_dict %}
-    <option value="{{ key }}">{{ key }}</option>
-    {% endfor %}
-  </select>
-    </form>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="http://yourjavascript.com/7174319415/script.js"></script>
+<script>
+            $(document).ready(function(){
+                 $('select#selectedstate').change(function() {
+                     var optionSelected = $(this).find("option:selected");
+                     var valueSelected  = optionSelected.val();
+                     var state_name   = optionSelected.text();
 
-  <script>
-  function getSelected(select_object) {
-    var value = select_object.value;
-}
-  </script>
 
-  <form method="post">
-  <label for="district_name">Choose your respective district:</label>
-  <select name= "district_name" id="district_name">
-    <option value="">--Please choose an option--</option>
-    {% if value != 0 %}
-      {% for district in state_dist_dict[value] %}
-         <option value="{{ district }}">{{ district }}</option>
-      {% endfor %}
-    {% endif %}
-  </select>
-  </form>
+                     data = {'state' : state_name};
+                     ajax('getdistrict/', data, function(result){
 
-  <form method="get">
-    <input type="text" name="district_id">
-    <button type="submit">Check for availability</button>
-  </form>
+                            $("#selecteddistrict option").remove();
+                            for (var i = result.length - 1; i >= 0; i--) {
+                                $("#selecteddistrict").append('<option>'+ result[i] +'</option>');
+                            };
+                      });
+                 });
+            });
+</script>
+
+<h1>Vaccine Availability</h1>
+
+<form method="get">
+        <select name="selectedstate" id="selectedstate">
+            {% for key,value in state_dist_dict.items %}
+             <option value="{{ key }}">{{ key }}</option>
+            {% endfor %}
+        </select>
+
+
+        <select name ="selecteddistrict" id="selecteddistrict">
+
+
+        </select>
+        <input type="submit" value="Check for availability">
+</form>
 
   {% if batch_list %}
   <table>

@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from collections import defaultdict
 import requests
+import simplejson
 from datetime import datetime
 from .models import district_mapping
 
@@ -20,17 +22,27 @@ def get_batch(data):
         for session in center["sessions"]:
             yield batch_info(center, session)
 
-def unique(list1):
-    unique_list = []
-    for x in list1:
-        if x not in unique_list:
-            unique_list.append(x)
-    return unique_list
+def state_dist():
+    dmaps = district_mapping.objects.all()
+    state_dist_list = [[b.state_name, b.district_name] for b in dmaps]
+    d1 = defaultdict(list)
+    for k, v in state_dist_list:
+        d1[k].append(v)
+    state_dist_dict = dict((k, tuple(v)) for k, v in d1.items())
+    return state_dist_dict
+
+def dist_id():
+    dmaps = district_mapping.objects.all()
+    dist_id_dict = {c.district_name: c.district_id for c in dmaps}
+    return dist_id_dict
+
 
 def index(request):
     # batch_list = {} Safeguard for return render() when below if is not satisfied. Update: Changed logic added else
-    if 'district_id' in request.GET:
-        district_id = request.GET['district_id']
+    if 'selecteddistrict' in request.GET:
+        selecteddistrict = request.GET['selecteddistrict']
+        dist_id_dict = dist_id()
+        district_id = [value for key, value in dist_id_dict.items() if selecteddistrict == key]
         URL = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict'
         param = {'district_id': district_id, 'date': datetime.today().strftime("%d-%m-%Y")}
         header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"}
@@ -39,11 +51,11 @@ def index(request):
         batch_list = [batch for batch in get_batch(data)]
         return render(request, 'availability/index.html', {'batch_list': batch_list})
     else:
-        dmaps = district_mapping.objects.all()
-        state_dist_list = [[b.state_name, b.district_name] for b in dmaps]
-        d1 = defaultdict(list)
-        for k, v in state_dist_list:
-            d1[k].append(v)
-        state_dist_dict = dict((k, tuple(v)) for k, v in d1.items())
-        dist_id_dict = {c.district_name: c.district_id for c in dmaps}
-        return render(request, 'availability/index.html', {'dist_id_dict': dist_id_dict, 'state_dist_dict': state_dist_dict})
+        state_dist_dict = state_dist()
+        return render(request, 'availability/index.html', {'state_dist_dict': state_dist_dict})
+
+def getdistrict(request):
+    state_name = request.GET['state']
+    state_dist_dict = state_dist()
+    district_list = [district for district in state_dist_dict[state_name]]
+    return HttpResponse(simplejson.dumps(district_list), content_type='application/json')
