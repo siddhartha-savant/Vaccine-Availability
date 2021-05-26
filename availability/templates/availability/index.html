@@ -21,9 +21,22 @@
                       });
                  });
             });
+
 </script>
 
-<h1>Vaccine Availability</h1>
+
+<div class="myDiv">
+    <h1>Vaccine Availability</h1>
+</div>
+
+<h2>Steps to follow to check Vaccine Availability:</h2>
+
+<ul>
+  <li>Select the state for which you want to check vaccine availability</li>
+  <li>Select the corresponding district</li>
+  <li>Press "Check for availability" button</li>
+</ul>
+
 
 <form method="get">
         <select name="selectedstate" id="selectedstate">
@@ -37,8 +50,17 @@
 
 
         </select>
-        <input type="submit" value="Check for availability">
+        {% if batch_list %}
+            <input type="submit" class="button" value="Back">
+        {% else %}
+            <input type="submit" class="button" value="Check for availability">
+        {% endif %}
+        <input type="submit" id="alerts" class="button" value="Alerts for availability" formmethod="post"> {% csrf_token %}
 </form>
+
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
 
   {% if batch_list %}
   <table>
