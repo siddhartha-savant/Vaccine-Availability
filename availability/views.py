@@ -4,7 +4,6 @@ import simplejson
 from availabilityupdater.availability_updater import *
 
 def index(request):
-    # batch_list = {} Safeguard for return render() when below if is not satisfied. Update: Changed logic added else
     if 'selecteddistrict' in request.GET:
         selecteddistrict = request.GET['selecteddistrict']
         batch_list = fetch_data(selecteddistrict)
