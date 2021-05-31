@@ -35,6 +35,7 @@
   <li>Select the state for which you want to check vaccine availability</li>
   <li>Select the corresponding district</li>
   <li>Press "Check for availability" button</li>
+  <li>Press "Back" to search again</li>
 </ul>
 
 
@@ -55,7 +56,6 @@
         {% else %}
             <input type="submit" class="button" value="Check for availability">
         {% endif %}
-        <input type="submit" id="alerts" class="button" value="Alerts for availability" formmethod="post"> {% csrf_token %}
 </form>
 
     {% if message %}

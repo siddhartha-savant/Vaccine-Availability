@@ -9,16 +9,6 @@ def index(request):
         selecteddistrict = request.GET['selecteddistrict']
         batch_list = fetch_data(selecteddistrict)
         return render(request, 'availability/index.html', {'batch_list': batch_list})
-    elif 'selecteddistrict' in request.POST:
-        message = ""
-        selecteddistrict = request.POST['selecteddistrict']
-        batch_list = fetch_data(selecteddistrict)
-        for batch in batch_list:
-            if batch["capacity"] > 0:
-                message = "Name: {}, Minimum Age: {}, Capacity: {}, Vaccine: {}".format(batch["name"], batch["age_limit"],
-                                                                                    batch["capacity"], batch["vaccine"])
-                #send_telegram_message(message)
-        return render(request, 'availability/index.html', {'message': message})
     else:
         state_dist_dict = state_dist()
         return render(request, 'availability/index.html', {'state_dist_dict': state_dist_dict})
