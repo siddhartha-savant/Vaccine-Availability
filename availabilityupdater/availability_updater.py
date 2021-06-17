@@ -1,5 +1,5 @@
 from collections import defaultdict
-from availability.models import district_mapping
+from availability.models import District_Mapping
 from datetime import datetime
 import requests
 
@@ -19,7 +19,7 @@ def get_batch(data):
             yield batch_info(center, session)
 
 def state_dist():
-    dmaps = district_mapping.objects.all()
+    dmaps = District_Mapping.objects.all()
     state_dist_list = [[b.state_name, b.district_name] for b in dmaps]
     d1 = defaultdict(list)
     for k, v in state_dist_list:
@@ -39,6 +39,6 @@ def fetch_data(selecteddistrict):
     return batch_list
 
 def dist_id():
-    dmaps = district_mapping.objects.all()
+    dmaps = District_Mapping.objects.all()
     dist_id_dict = {c.district_name: c.district_id for c in dmaps}
     return dist_id_dict

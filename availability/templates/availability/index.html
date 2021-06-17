@@ -1,8 +1,8 @@
 {% extends 'availability/base.html' %}
 {% block content %}
 
+<!--Unable to load the script reference at the end of the page due to templating issues -->
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script type="text/javascript" src="http://yourjavascript.com/7174319415/script.js"></script>
 <script>
             $(document).ready(function(){
                  $('select#selectedstate').change(function() {
@@ -10,17 +10,54 @@
                      var valueSelected  = optionSelected.val();
                      var state_name   = optionSelected.text();
 
-
-                     data = {'state' : state_name};
-                     ajax('getdistrict/', data, function(result){
-
+                     $.ajax({
+                        url: 'getdistrict/',
+                        type: 'GET',
+                        data: {'state': state_name},
+                        success: function(result){
                             $("#selecteddistrict option").remove();
                             for (var i = result.length - 1; i >= 0; i--) {
                                 $("#selecteddistrict").append('<option>'+ result[i] +'</option>');
                             };
+                        },
                       });
                  });
             });
+
+            var myVar;
+            function fetchdata(){
+            var optionSelected = $('select#selecteddistrict').find("option:selected");
+            var district_name   = optionSelected.text();
+            console.log(district_name)
+                $.ajax({
+                        url: 'scheduledata/',
+                        type: 'GET',
+                        data: {'district': district_name},
+                        success: function(result){
+                        for (var i = result.length - 1; i >= 0; i--) {
+                            //document.write('<p>' + result[i] + '</p>');
+                            $("#availablebullets").append('<li>' + result[i] + '</li>');
+                            //$("#availablebullets").append('<option>'+ result[i] +'</option>');
+                            };
+                        },
+                      });
+            }
+
+      $(document).ready(function(){
+            $('#alertbutton').click(function() {
+                console.log("Button is pressed");
+                document.getElementById('stopbutton').classList.remove('hidden')
+                var optionSelected = $('select#selecteddistrict').find("option:selected");
+                var valueSelected  = optionSelected.val();
+                var district_name   = optionSelected.text();
+                console.log(district_name)
+                myVar = setInterval(fetchdata,5000);
+            });
+      });
+
+      function stopFunction(){
+            clearInterval(myVar); // stop the setInterval timer
+      }
 
 </script>
 
@@ -32,60 +69,65 @@
 <h2>Steps to follow to check Vaccine Availability:</h2>
 
 <ul>
-  <li>Select the state for which you want to check vaccine availability</li>
-  <li>Select the corresponding district</li>
-  <li>Press "Check for availability" button</li>
-  <li>Press "Back" to search again</li>
+    <li>Select the state for which you want to check vaccine availability</li>
+    <li>Select the corresponding district</li>
+    <li>Press "Check for availability" button</li>
+    <li>Press "Back" to search again</li>
 </ul>
 
 
 <form method="get">
-        <select name="selectedstate" id="selectedstate">
-            {% for key,value in state_dist_dict.items %}
-             <option value="{{ key }}">{{ key }}</option>
-            {% endfor %}
-        </select>
+    <select name="selectedstate" id="selectedstate">
+        {% for key,value in state_dist_dict.items %}
+        <option value="{{ key }}">{{ key }}</option>
+        {% endfor %}
+    </select>
 
 
-        <select name ="selecteddistrict" id="selecteddistrict">
+    <select name ="selecteddistrict" id="selecteddistrict">
 
 
-        </select>
-        {% if batch_list %}
-            <input type="submit" class="button" value="Back">
-        {% else %}
-            <input type="submit" class="button" value="Check for availability">
-        {% endif %}
-</form>
+    </select>
+    {% if batch_list %}
+    <input type="submit" class="button" value="Back">
+    {% else %}
+    <input type="submit" class="button" value="Check for availability">
+    <input id="alertbutton" type="button" class="button" value="Alert when available">
+    <input id="stopbutton" type="button" class="button hidden"  onclick="stopFunction()" value="Stop Timer">
 
-    {% if message %}
-    <p>{{ message }}</p>
     {% endif %}
 
-  {% if batch_list %}
-  <table>
+
+</form>
+
+<ol  id="availablebullets">
+
+</ol>
+
+{% if batch_list %}
+<table>
     <tr>
-      <th>Center Location</th>
-      <th>Date</th>
-      <th>Age Limit</th>
-      <th>Capacity</th>
-      <th>Vaccine</th>
+        <th>Center Location</th>
+        <th>Date</th>
+        <th>Age Limit</th>
+        <th>Capacity</th>
+        <th>Vaccine</th>
     </tr>
     {% for batch in batch_list %}
     <tr>
-      {% for key, value in batch.items %}
+        {% for key, value in batch.items %}
         {% if key == "name" %}
-          <td>
-          {% for x in value %}
+        <td>
+            {% for x in value %}
             {{ x }} <br/>
-          {% endfor %}
-          </td>
+            {% endfor %}
+        </td>
         {% else %}
         <td> {{ value }} </td>
         {% endif %}
-      {% endfor %}
+        {% endfor %}
     </tr>
     {% endfor %}
-  </table>
+</table>
 {% endif %}
 {% endblock content %}

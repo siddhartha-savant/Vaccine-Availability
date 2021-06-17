@@ -1,6 +1,6 @@
 from csv import DictReader
 from django.core.management.base import BaseCommand
-from availability.models import district_mapping
+from availability.models import District_Mapping
 
 
 ALREADY_LOADED_ERROR_MESSAGE = """
@@ -15,13 +15,13 @@ class Command(BaseCommand):
     help = "Loads data from district_mapping.csv into our district_mapping mode"
 
     def handle(self, *args, **options):
-        if district_mapping.objects.exists():
+        if District_Mapping.objects.exists():
             print('District mapping data already loaded...exiting.')
             print(ALREADY_LOADED_ERROR_MESSAGE)
             return
         print("Creating mapping data")
         for row in DictReader(open('./district_mapping.csv')):
-            dmap = district_mapping()
+            dmap = District_Mapping()
             dmap.state_id = row['state_id']
             dmap.district_id = row['district_id']
             dmap.district_name = row['district_name']
