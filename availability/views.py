@@ -26,11 +26,11 @@ def scheduledata(request):
     message_list = []
     for batch in batch_list:
         if batch["capacity"] > 0:
-            message = "Vaccine available at {} {} {}.<br/> Minimum Age: {}.<br/> Capacity: {}.<br/>" \
-                      "Vaccine: {}".format(batch["name"][0], batch["name"][1], batch["name"][2], batch["age_limit"],
-                                               batch["capacity"], batch["vaccine"])
+            message = "<strong>Vaccine available:</strong> {}, {}, {}.<br/> <strong>Minimum Age:</strong> {}." \
+                      "<br/> <strong>Capacity:</strong> {}.<br/> <strong>Vaccine:</strong> {}".format(batch["name"][0],
+                         batch["name"][1], batch["name"][2], batch["age_limit"], batch["capacity"], batch["vaccine"])
             message_list.append(message)
     if not message_list:
-        message = "No vaccine available currently"
-        return HttpResponse(simplejson.dumps(message), content_type='application/json')
+        message_list = ["No vaccine available currently"]
+        return HttpResponse(simplejson.dumps(message_list), content_type='application/json')
     return HttpResponse(simplejson.dumps(message_list), content_type='application/json')

@@ -58,3 +58,7 @@ select {
 .hidden{
     visibility: hidden!important;
 }
+
+.pricing-header {
+  max-width: 700px;
+}
