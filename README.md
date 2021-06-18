@@ -22,3 +22,7 @@ Run the Django development server
 python manage.py runserver
 ```
 Visit `http://localhost:8000` to view the app.
+
+Screenshot of the application:
+
+![](static/images/vaccine-availability-ss.PNG)
